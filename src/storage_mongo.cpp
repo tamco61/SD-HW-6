@@ -6,6 +6,7 @@
 
 #include <userver/components/component_context.hpp>
 #include <userver/formats/bson/inline.hpp>
+#include <userver/formats/serialize/common_containers.hpp>
 #include <userver/logging/log.hpp>
 #include <userver/storages/mongo/component.hpp>
 #include <userver/utils/datetime.hpp>
@@ -161,6 +162,7 @@ std::string StorageMongoComponent::CreateTrip(
 
     auto now = userver::utils::datetime::Now();
     const auto route_points = SplitRoutePoints(route.points);
+    const auto trip_oid = userver::formats::bson::Oid{};
 
     auto route_doc = userver::formats::bson::MakeDoc(
         "points", route_points,
@@ -168,6 +170,7 @@ std::string StorageMongoComponent::CreateTrip(
         "distance_km", distance_km);
 
     auto doc = userver::formats::bson::MakeDoc(
+        "_id", trip_oid,
         "owner_login", route.owner_login,
         "route_id", route.id,
         "route", route_doc,
@@ -176,8 +179,8 @@ std::string StorageMongoComponent::CreateTrip(
         "participants", userver::formats::bson::MakeArray(),
         "created_at", now);
 
-    auto result = trips_collection.InsertOne(doc);
-    return result.InsertedId().As<userver::formats::bson::Oid>().ToString();
+    trips_collection.InsertOne(doc);
+    return trip_oid.ToString();
   } catch (const std::exception& e) {
     LOG_ERROR() << "Failed to create trip in Mongo: " << e.what();
     throw std::runtime_error("MongoDB Insert Error");

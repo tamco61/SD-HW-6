@@ -3,10 +3,10 @@ worker-fs-threads: 2
 logger-level: info
 
 is-testing: false
+mongo-connection: 'mongodb://localhost:27017/blablacar_db'
 
 server-port: 8080
 
 dbconnection: 'postgresql://postgres:postgres_password@localhost:5432/blablacar_db'
 
 secdist-path: 'configs/secdist.json'
-

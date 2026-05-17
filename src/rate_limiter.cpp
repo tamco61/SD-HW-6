@@ -26,10 +26,10 @@ RateLimitResult RateLimiterComponent::Check(const std::string& key,
     // Выполняем Lua-скрипт атомарно на стороне Redis.
     // Скрипт возвращает массив: {allowed(0/1), current_count, ttl}
     auto reply = redis_client_
-                     ->Eval(kRateLimitScript, {full_key},
-                            {std::to_string(limit),
-                             std::to_string(window_seconds)},
-                            userver::storages::redis::CommandControl{})
+                     ->Eval<userver::storages::redis::ReplyData>(
+                         kRateLimitScript, {full_key},
+                         {std::to_string(limit), std::to_string(window_seconds)},
+                         userver::storages::redis::CommandControl{})
                      .Get();
 
     // Парсим ответ из Redis (массив из 3 элементов)

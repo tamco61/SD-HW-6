@@ -11,6 +11,7 @@ components_manager:
   components: # Configuring components that were registered via component_list
     server:
       listener: # configuring the main listening socket...
+        address: 0.0.0.0
         port: $server-port # ...to listen on this port and...
         task_processor: main-task-processor # ...process incoming requests on this task processor.
     logging:
@@ -39,6 +40,9 @@ components_manager:
 
     # --- Secdist (хранит credentials для Redis) ---
     secdist:
+      provider: default-secdist-provider
+
+    default-secdist-provider:
       config: $secdist-path
       missing-ok: true
       environment-secrets-key: ""
@@ -52,7 +56,7 @@ components_manager:
     postgres-storage:
 
     mongo-blabla:
-      dbconnection: "mongodb://localhost:27017/blablacar_db"
+      dbconnection: $mongo-connection
       maintenance_period: 15s
 
     mongo-storage:
@@ -126,10 +130,10 @@ components_manager:
     testsuite-support: {}
 
     http-client-middleware-pipeline:
-      load-enabled: $is_testing
+      load-enabled: $is-testing
 
     http-client-core:
-      load-enabled: $is_testing
+      load-enabled: $is-testing
 
     http-client:
       load-enabled: $is-testing

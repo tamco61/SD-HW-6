@@ -49,10 +49,10 @@ std::string SafeHandle(const userver::server::http::HttpRequest& request,
 void SetRateLimitHeaders(const userver::server::http::HttpRequest& request,
                          const RateLimitResult& rl) {
   auto& response = request.GetHttpResponse();
-  response.SetHeader("X-RateLimit-Limit", std::to_string(rl.limit));
+  response.SetHeader(std::string{"X-RateLimit-Limit"}, std::to_string(rl.limit));
   const auto remaining = std::max(std::int64_t{0}, rl.limit - rl.current);
-  response.SetHeader("X-RateLimit-Remaining", std::to_string(remaining));
-  response.SetHeader("X-RateLimit-Reset", std::to_string(rl.ttl));
+  response.SetHeader(std::string{"X-RateLimit-Remaining"}, std::to_string(remaining));
+  response.SetHeader(std::string{"X-RateLimit-Reset"}, std::to_string(rl.ttl));
 }
 
 }  // namespace

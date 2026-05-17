@@ -13,6 +13,6 @@ db-user: postgres
 db-password: postgres_password
 
 dbconnection: 'postgresql://postgres:postgres_password@postgres:5432/blablacar_db'
+mongo-connection: 'mongodb://mongo:27017/blablacar_db'
 
 secdist-path: '/app/configs/secdist.docker.json'
-

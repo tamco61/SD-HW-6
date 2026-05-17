@@ -76,32 +76,32 @@ INSERT INTO trips (route_id, departure_time, status) VALUES
 -- Тестовые данные для таблицы trip_participants (20 записей)
 INSERT INTO trip_participants (trip_id, login) VALUES
 -- Поездка 1: Иван (владелец) + участники
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 0), 'ivan_petrov'),
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 0), 'maria_sidorova'),
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 0), 'alexey_smirnov'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 0), 'ivan_petrov'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 0), 'maria_sidorova'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 0), 'alexey_smirnov'),
 -- Поездка 2: Иван (владелец) + другие участники
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 1), 'ivan_petrov'),
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 1), 'olga_kuznetsova'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 1), 'ivan_petrov'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 1), 'olga_kuznetsova'),
 -- Поездка 3: Иван (владелец) + участники
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 2), 'ivan_petrov'),
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 2), 'dmitry_popov'),
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 2), 'elena_volkova'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 2), 'ivan_petrov'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 2), 'dmitry_popov'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 2), 'elena_volkova'),
 -- Поездка 4: Мария (владелец) + участники
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 3), 'maria_sidorova'),
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 3), 'sergey_novikov'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 3), 'maria_sidorova'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 3), 'sergey_novikov'),
 -- Поездка 5: Мария (владелец) + участники
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 4), 'maria_sidorova'),
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 4), 'anna_morozova'),
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 4), 'nikita_fedorov'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 4), 'maria_sidorova'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 4), 'anna_morozova'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 4), 'nikita_fedorov'),
 -- Поездка 6: Алексей (владелец) + участники
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 5), 'alexey_smirnov'),
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 5), 'tatiana_lebedeva'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 5), 'alexey_smirnov'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 5), 'tatiana_lebedeva'),
 -- Поездка 7: Алексей (владелец) + участники
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 6), 'alexey_smirnov'),
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 6), 'artem_kozlov'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 6), 'alexey_smirnov'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 6), 'artem_kozlov'),
 -- Поездка 8: Ольга (владелец) + участники
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 7), 'olga_kuznetsova'),
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 7), 'natasha_orlova'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 7), 'olga_kuznetsova'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 7), 'natasha_orlova'),
 -- Поездка 9: Дмитрий (владелец) + участники
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 8), 'dmitry_popov'),
-((SELECT id FROM trips ORDER BY created_at LIMIT 1 OFFSET 8), 'ivan_petrov');
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 8), 'dmitry_popov'),
+((SELECT id FROM trips ORDER BY departure_time, id LIMIT 1 OFFSET 8), 'ivan_petrov');

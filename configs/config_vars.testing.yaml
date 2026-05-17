@@ -3,5 +3,6 @@ worker-fs-threads: 2
 logger-level: debug
 
 is-testing: true
+mongo-connection: 'mongodb://localhost:27017/blablacar_db'
 
 server-port: 8080

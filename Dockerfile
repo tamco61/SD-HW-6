@@ -1,4 +1,5 @@
-FROM ghcr.io/userver-framework/ubuntu-24.04-userver:latest
+ARG TARGETPLATFORM=linux/amd64
+FROM --platform=$TARGETPLATFORM ghcr.io/userver-framework/ubuntu-24.04-userver:latest
 
 WORKDIR /app
 COPY . .
@@ -10,4 +11,3 @@ RUN cmake --preset release -DUSERVER_FEATURE_REDIS=ON && \
 EXPOSE 8080
 
 CMD ["/app/build-release/blablacar_service", "--config", "/app/configs/static_config.yaml", "--config_vars", "/app/configs/config_vars.docker.yaml"]
-
