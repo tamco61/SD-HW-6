@@ -1,0 +1,348 @@
+openapi: 3.0.3
+info:
+  title: Trip Service API
+  version: 1.0.0
+  description: API for managing users, routes, and trips. Trips are stored in MongoDB, while users and routes remain in PostgreSQL.
+servers:
+  - url: http://localhost:8080/v1
+    description: Local development server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    UserCreate:
+      type: object
+      required:
+        - login
+        - first_name
+        - last_name
+        - password
+      properties:
+        login:
+          type: string
+          example: john_doe
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+        password:
+          type: string
+          example: secretpassword
+    UserResponse:
+      type: object
+      properties:
+        login:
+          type: string
+          example: john_doe
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+    LoginRequest:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          example: john_doe
+        password:
+          type: string
+          example: secretpassword
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: some-random-token
+    RouteCreate:
+      type: object
+      required:
+        - owner_login
+        - points
+      properties:
+        owner_login:
+          type: string
+          example: john_doe
+        points:
+          type: string
+          example: "Point A, Point B"
+    RouteResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "d290f1ee-6c54-4b01-90e6-d701748f0851"
+        owner_login:
+          type: string
+          example: john_doe
+        points:
+          type: string
+          example: "Point A, Point B"
+    TripCreate:
+      type: object
+      required:
+        - route_id
+      properties:
+        route_id:
+          type: string
+          example: "d290f1ee-6c54-4b01-90e6-d701748f0851"
+    TripResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "6c54f1ee-d290-4b01-90e6-d701748f0851"
+        route_id:
+          type: string
+          example: "d290f1ee-6c54-4b01-90e6-d701748f0851"
+        participants:
+          type: array
+          items:
+            type: string
+          example: ["john_doe"]
+    AddUserToTripRequest:
+      type: object
+      required:
+        - trip_id
+        - login
+      properties:
+        trip_id:
+          type: string
+          example: "6c54f1ee-d290-4b01-90e6-d701748f0851"
+        login:
+          type: string
+          example: john_doe
+    StatusResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error message"
+paths:
+  /users:
+    post:
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '200':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '409':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      summary: Get user by login
+      parameters:
+        - in: query
+          name: login
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /users/search:
+    get:
+      summary: Search users by name (login or first/last name mask)
+      parameters:
+        - in: query
+          name: mask
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of matching users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+  /login:
+    post:
+      summary: Authenticate user and get token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /routes:
+    post:
+      summary: Create a new route
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteCreate'
+      responses:
+        '200':
+          description: Route created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "d290f1ee-6c54-4b01-90e6-d701748f0851"
+        '401':
+          description: Unauthorized
+    get:
+      summary: Get user routes
+      parameters:
+        - in: query
+          name: login
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of routes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RouteResponse'
+  /trips:
+    post:
+      summary: Create a new trip
+      description: Creates a MongoDB trip document using an existing PostgreSQL route referenced by `route_id`.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TripCreate'
+      responses:
+        '200':
+          description: Trip created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "6c54f1ee-d290-4b01-90e6-d701748f0851"
+        '401':
+          description: Unauthorized
+        '404':
+          description: Route not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      summary: Get trip by ID
+      description: Reads trip details from MongoDB and returns the backward-compatible response with route_id and participants.
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Trip details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripResponse'
+        '404':
+          description: Trip not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Invalid MongoDB trip ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /trips/add-user:
+    post:
+      summary: Add a user to an existing trip
+      description: Adds a participant to a MongoDB trip document using `$addToSet`, so duplicate users are ignored.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUserToTripRequest'
+      responses:
+        '200':
+          description: User added to trip successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '404':
+          description: Trip not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Invalid MongoDB trip ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'

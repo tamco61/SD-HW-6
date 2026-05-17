@@ -1,0 +1,95 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo:6.0
+    container_name: mongo-blabla
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+      - ./validation.js:/app/validation.js:ro
+      - ./data.js:/app/data.js:ro
+      - ./queries.js:/app/queries.js:ro
+    restart: unless-stopped
+    networks:
+      - blablacar-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: blablacar-postgres
+    environment:
+      POSTGRES_DB: blablacar_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=en_US.UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./data.sql:/docker-entrypoint-initdb.d/02-data.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - blablacar-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: blablacar-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - blablacar-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: blablacar-api
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./configs:/app/configs
+      - ./schema.sql:/app/schema.sql
+      - ./data.sql:/app/data.sql
+      - ./queries.sql:/app/queries.sql
+    environment:
+      - CCACHE_DIR=/app/.ccache
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=blablacar_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres_password
+      - REDIS_HOST=redis
+    depends_on:
+      mongo:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - blablacar-network
+
+volumes:
+  postgres_data:
+    driver: local
+  mongo_data:
+  redis_data:
+    driver: local
+
+networks:
+  blablacar-network:
+    driver: bridge

@@ -1,0 +1,53 @@
+{
+    "image": "ghcr.io/userver-framework/ubuntu-22.04-userver-pg-dev",
+    "remoteUser": "user",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/home/user/blablacar_service,type=bind",
+    "workspaceFolder": "/home/user/blablacar_service",
+    "runArgs": [
+        "--cap-add=SYS_PTRACE",
+        "--security-opt",
+        "seccomp=unconfined"
+    ],
+    "forwardPorts": [
+        8080
+    ],
+    "containerEnv": {
+        "SHELL": "/bin/bash",
+        "PREFIX": "${PREFIX:-~/.local}",
+        "CCACHE_DIR": "/home/user/blablacar_service/.ccache",
+        "CORES_DIR": "/cores"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "llvm-vs-code-extensions.vscode-clangd",
+                "ms-vscode.cmake-tools",
+                "ms-vscode.makefile-tools",
+                "vadimcn.vscode-lldb",
+                "ms-azuretools.vscode-docker",
+                "ms-python.python" 
+            ],
+            "settings": {
+                "cmake.automaticReconfigure": false,
+                "cmake.configureOnEdit":  false,
+                "cmake.configureOnOpen": false,
+                "cmake.copyCompileCommands": "${workspaceFolder}/.vscode/compile_commands.json",
+                "clangd.path": "/usr/bin/clangd",
+                "clangd.arguments": [
+                    "--background-index",
+                    "--compile-commands-dir=.vscode",
+                    "--clang-tidy",
+                    "--completion-style=detailed",
+                    "--header-insertion=never"
+                ],
+                "[cpp]": {
+                    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
+                    "editor.formatOnSave": true
+                },
+                "python.testing.pytestEnabled": true
+            }
+        }
+    },
+    "onCreateCommand": "sudo git config --global --add safe.directory /home/user/blablacar_service",
+    "mounts": []
+}

@@ -1,0 +1,18 @@
+worker-threads: 4
+worker-fs-threads: 2
+logger-level: debug
+
+is-testing: false
+
+server-port: 8080
+
+db-host: postgres
+db-port: 5432
+db-name: blablacar_db
+db-user: postgres
+db-password: postgres_password
+
+dbconnection: 'postgresql://postgres:postgres_password@postgres:5432/blablacar_db'
+
+secdist-path: '/app/configs/secdist.docker.json'
+

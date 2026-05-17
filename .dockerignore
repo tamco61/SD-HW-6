@@ -1,0 +1,53 @@
+# Build artifacts
+build*/
+cmake-build-*/
+ninja/
+Testing/
+*.o
+*.a
+*.so
+*.dylib
+*.exe
+*.out
+*.app
+compile_commands.json
+CMakeUserPresets.json
+Makefile.local
+.ccache/
+.cache/
+.cores/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+tests/.pytest_cache/
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+configs.zip
+.github/

@@ -1,0 +1,61 @@
+# === Build artifacts ===
+build*/
+cmake-build-*/
+ninja/
+Testing/
+*.o
+*.a
+*.so
+*.dylib
+*.exe
+*.out
+*.app
+compile_commands.json
+CMakeUserPresets.json
+Makefile.local
+.ccache/
+.cache/
+.cores/
+
+# === Dependencies ===
+third_party/
+
+# === Python ===
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+tests/.pytest_cache/
+.venv/
+venv/
+env/
+dist/
+build/
+*.egg-info/
+
+# === IDEs ===
+.vscode/*
+!.vscode/c_cpp_properties.json
+!.vscode/cmake-variants.yaml
+!.vscode/README.md
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+\#*#
+
+# === Database ===
+.pgdata/
+
+# === System files ===
+.DS_Store
+Thumbs.db
+
+# === Project specific ===
+configs.zip
+/.vscode
+/.github
