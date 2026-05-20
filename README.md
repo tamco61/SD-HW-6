@@ -1,7 +1,7 @@
 # BlablaCar Service — Event-Driven Architecture (ДЗ-06)
 
 REST API сервис поиска попутчиков на C++ (`userver`) с событийно-ориентированной архитектурой на RabbitMQ.
-
+Выполнил Ахатов Тимур 106
 ---
 
 ## Документация (ДЗ-06)
