@@ -10,9 +10,11 @@
 #include <userver/storages/secdist/component.hpp>
 #include <userver/storages/secdist/provider_component.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
+#include <userver/urabbitmq/component.hpp>
 #include <userver/utils/daemon_run.hpp>
 
 #include "auth_middleware.hpp"
+#include "events.hpp"
 #include "handlers/api_handlers.hpp"
 #include "rate_limiter.hpp"
 #include "redis_cache.hpp"
@@ -33,15 +35,16 @@ int main(int argc, char* argv[]) {
           .Append<userver::components::Mongo>("mongo-blabla")
           .Append<userver::components::Secdist>()
           .Append<userver::components::DefaultSecdistProvider>()
+          .Append<userver::components::RabbitMQ>("rabbitmq-blabla")
           .Append<userver::components::Redis>("redis-blabla");
 
   blablacar_service::AppendStoragePg(component_list);
   blablacar_service::AppendStorageMongo(component_list);
   blablacar_service::AppendRedisCache(component_list);
   blablacar_service::AppendRateLimiter(component_list);
+  blablacar_service::AppendEventComponents(component_list);
   blablacar_service::AppendApiHandlers(component_list);
   blablacar_service::AppendAuthMiddleware(component_list);
 
   return userver::utils::DaemonMain(argc, argv, component_list);
 }
-

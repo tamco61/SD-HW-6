@@ -1,7 +1,12 @@
 import pathlib
 import pytest
 
-pytest_plugins = ['pytest_userver.plugins.core', 'pytest_userver.plugins.postgresql', 'pytest_userver.plugins.mongo']
+pytest_plugins = [
+    'pytest_userver.plugins.core',
+    'pytest_userver.plugins.postgresql',
+    'pytest_userver.plugins.mongo',
+    'pytest_userver.plugins.rabbitmq',
+]
 from testsuite.databases.pgsql import discover
 
 

@@ -61,6 +61,21 @@ components_manager:
 
     mongo-storage:
 
+    # --- RabbitMQ (event broker для ДЗ-06) ---
+    rabbitmq-blabla:
+      secdist_alias: rabbitmq-blabla
+      min_pool_size: 2
+      max_pool_size: 5
+      max_in_flight_requests: 10
+      use_secure_connection: false
+
+    event-publisher:
+
+    event-consumer:
+      rabbit_name: rabbitmq-blabla
+      queue: blablacar.audit.events
+      prefetch_count: 5
+
     # --- Redis (кеширование и rate limiting) ---
     redis-blabla:
       groups:

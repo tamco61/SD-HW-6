@@ -6,7 +6,8 @@ include(DownloadUserver)
 
 set(USERVER_FEATURE_POSTGRESQL ON CACHE BOOL "" FORCE)
 set(USERVER_FEATURE_REDIS ON CACHE BOOL "" FORCE)
-find_package(userver COMPONENTS core postgresql mongo redis REQUIRED)
+set(USERVER_FEATURE_RABBITMQ ON CACHE BOOL "" FORCE)
+find_package(userver COMPONENTS core postgresql mongo redis rabbitmq REQUIRED)
 find_package(userver COMPONENTS core postgresql QUIET)
 if(NOT userver_FOUND)
   # Tries TRY_DIR first, falls back to downloading userver from GitHub using CPM.
@@ -34,11 +35,13 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/redis_cache.hpp
     src/rate_limiter.cpp
     src/rate_limiter.hpp
+    src/events.cpp
+    src/events.hpp
     src/models.hpp
     src/auth_middleware.hpp
     src/auth_middleware.cpp
 )
-target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::core userver::postgresql userver::mongo userver::redis)
+target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::core userver::postgresql userver::mongo userver::redis userver::rabbitmq)
 
 # Force include GCC 11 headers for coroutine support with Clang
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")

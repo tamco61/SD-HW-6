@@ -116,7 +116,8 @@ CreateUserHandler::CreateUserHandler(
     const userver::components::ComponentContext& context)
     : HttpHandlerBase(config, context),
       storage_(context.FindComponent<StoragePgComponent>()),
-      cache_(context.FindComponent<RedisCacheComponent>()) {}
+      cache_(context.FindComponent<RedisCacheComponent>()),
+      events_(context.FindComponent<EventPublisherComponent>()) {}
 
 std::string CreateUserHandler::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
@@ -135,6 +136,7 @@ std::string CreateUserHandler::HandleRequestThrow(
 
     // Инвалидируем кеш пользователя, чтобы следующий GET получил свежие данные
     cache_.Invalidate("cache:user:" + user.login);
+    events_.PublishUserCreated(user);
 
     return std::string("{\"status\": \"ok\"}");
   });
@@ -225,7 +227,8 @@ CreateRouteHandler::CreateRouteHandler(
     const userver::components::ComponentContext& context)
     : HttpHandlerBase(config, context),
       storage_(context.FindComponent<StoragePgComponent>()),
-      cache_(context.FindComponent<RedisCacheComponent>()) {}
+      cache_(context.FindComponent<RedisCacheComponent>()),
+      events_(context.FindComponent<EventPublisherComponent>()) {}
 
 std::string CreateRouteHandler::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
@@ -235,7 +238,12 @@ std::string CreateRouteHandler::HandleRequestThrow(
     Route route{"", json["owner_login"].As<std::string>(),
                 json["points"].As<std::string>()};
 
-    std::string id = storage_.AddRoute(std::move(route));
+    std::string id = storage_.AddRoute(route);
+    if (id.empty()) {
+      request.SetResponseStatus(HttpStatus::kInternalServerError);
+      return std::string("{\"error\": \"Internal server error\"}");
+    }
+    route.id = id;
     ValueBuilder builder;
     builder["id"] = id;
 
@@ -243,6 +251,7 @@ std::string CreateRouteHandler::HandleRequestThrow(
     // чтобы GET /v1/routes вернул актуальный список
     auto owner = json["owner_login"].As<std::string>();
     cache_.Invalidate("cache:routes:" + owner);
+    events_.PublishRouteCreated(route);
 
     return ToString(builder.ExtractValue());
   });
@@ -301,7 +310,8 @@ CreateTripHandler::CreateTripHandler(
     const userver::components::ComponentContext& context)
     : HttpHandlerBase(config, context),
       pg_storage_(context.FindComponent<StoragePgComponent>()),
-      mongo_storage_(context.FindComponent<StorageMongoComponent>()) {}
+      mongo_storage_(context.FindComponent<StorageMongoComponent>()),
+      events_(context.FindComponent<EventPublisherComponent>()) {}
 
 std::string CreateTripHandler::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
@@ -317,6 +327,7 @@ std::string CreateTripHandler::HandleRequestThrow(
 
     auto departure_time = std::chrono::system_clock::now();
     std::string id = mongo_storage_.CreateTrip(*route, 0.0, departure_time);
+    events_.PublishTripCreated(id, *route);
     ValueBuilder builder;
     builder["id"] = id;
     return ToString(builder.ExtractValue());
@@ -329,7 +340,8 @@ AddUserToTripHandler::AddUserToTripHandler(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& context)
     : HttpHandlerBase(config, context),
-      mongo_storage_(context.FindComponent<StorageMongoComponent>()) {}
+      mongo_storage_(context.FindComponent<StorageMongoComponent>()),
+      events_(context.FindComponent<EventPublisherComponent>()) {}
 
 std::string AddUserToTripHandler::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
@@ -341,6 +353,8 @@ std::string AddUserToTripHandler::HandleRequestThrow(
 
     switch (mongo_storage_.JoinTrip(trip_id, login)) {
       case JoinTripResult::kJoined:
+        events_.PublishTripParticipantJoined(trip_id, login);
+        return std::string("{\"status\": \"ok\"}");
       case JoinTripResult::kAlreadyJoined:
         return std::string("{\"status\": \"ok\"}");
       case JoinTripResult::kNotFound:

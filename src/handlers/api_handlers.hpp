@@ -4,6 +4,7 @@
 #include <userver/components/component_list.hpp>
 #include <userver/server/handlers/http_handler_base.hpp>
 #include <userver/utils/uuid4.hpp>
+#include "../events.hpp"
 #include "../rate_limiter.hpp"
 #include "../redis_cache.hpp"
 #include "../storage_mongo.hpp"
@@ -40,6 +41,7 @@ class CreateUserHandler final
  private:
   StoragePgComponent& storage_;
   RedisCacheComponent& cache_;
+  EventPublisherComponent& events_;
 };
 
 class GetUserHandler final : public userver::server::handlers::HttpHandlerBase {
@@ -83,6 +85,7 @@ class CreateRouteHandler final
  private:
   StoragePgComponent& storage_;
   RedisCacheComponent& cache_;
+  EventPublisherComponent& events_;
 };
 
 class GetRoutesHandler final
@@ -113,6 +116,7 @@ class CreateTripHandler final
  private:
   StoragePgComponent& pg_storage_;
   StorageMongoComponent& mongo_storage_;
+  EventPublisherComponent& events_;
 };
 
 class AddUserToTripHandler final
@@ -127,6 +131,7 @@ class AddUserToTripHandler final
 
  private:
   StorageMongoComponent& mongo_storage_;
+  EventPublisherComponent& events_;
 };
 
 class GetTripHandler final : public userver::server::handlers::HttpHandlerBase {
